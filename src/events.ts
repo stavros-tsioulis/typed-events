@@ -75,16 +75,7 @@ export class CompatibleEventEmitter<Events extends { [K: string]: any[] }>
     eventName: E,
     listener: Listener<E, Events>
   ): this {
-    const onceWrapper: Listener<E, Events> = (
-      ...args: EventArgs<E, Events>
-    ) => {
-      this.removeListener(eventName, onceWrapper);
-      listener(...args);
-    };
-
-    onceWrapper.listener = listener;
-
-    return this.prependListener(eventName, onceWrapper);
+    return this.prependListener(eventName, this.createOnceWrapper(eventName, listener));
   }
 
   removeListener<E extends EventName<Events>>(
@@ -132,7 +123,7 @@ export class CompatibleEventEmitter<Events extends { [K: string]: any[] }>
     eventName: E,
     ...args: EventArgs<E, Events>
   ): boolean {
-    const listeners = this.listeners(eventName);
+    const listeners = this.rawListeners(eventName);
 
     for (const listener of listeners)
       try {
@@ -155,7 +146,7 @@ export class CompatibleEventEmitter<Events extends { [K: string]: any[] }>
     eventName: EventName<Events>,
     listener?: Function | undefined
   ): number {
-    const listeners = this.listeners(eventName);
+    const listeners = this.rawListeners(eventName);
 
     if (listener) return listeners.filter((l) => l === listener).length;
     else return listeners.length;
@@ -179,6 +170,10 @@ export class CompatibleEventEmitter<Events extends { [K: string]: any[] }>
     eventName: E,
     listener: Listener<E, Events>
   ): this {
+    return this.addListener(eventName, this.createOnceWrapper(eventName, listener));
+  }
+
+  private createOnceWrapper<E extends EventName<Events>>(eventName: E, listener: Listener<E, Events>): Listener<E, Events> {
     const onceWrapper: Listener<E, Events> = (
       ...args: EventArgs<E, Events>
     ) => {
@@ -187,8 +182,7 @@ export class CompatibleEventEmitter<Events extends { [K: string]: any[] }>
     };
 
     onceWrapper.listener = listener;
-
-    return this.addListener(eventName, onceWrapper);
+    return onceWrapper
   }
 
   eventNames(): EventName<Events>[] {
