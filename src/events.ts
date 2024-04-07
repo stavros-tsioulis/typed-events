@@ -1,4 +1,4 @@
-import type EventEmitter from "node:events";
+import type NodeEventEmitter from "node:events";
 
 export type OnlyStringSymbolKeys<T> = {
   [K in keyof T]: K extends string | symbol ? K : never;
@@ -28,7 +28,7 @@ export type Listener<
 
 export let defaultMaxListeners = 10;
 
-export class CompatibleEventEmitter<Events extends { [K: string]: any[] }> implements EventEmitter {
+export class EventEmitter<Events extends { [K: string]: any[] }> implements NodeEventEmitter {
   private _events: Map<EventName<Events>, Function[]> = new Map();
   private _eventsCount: number = 0;
   private _maxListeners: number = defaultMaxListeners;

@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { CompatibleEventEmitter } from "../src/events";
+import { EventEmitter } from "../src/events";
 
-describe("CompatibleEventEmitter", () => {
+describe("EventEmitter", () => {
   it("should add listeners", () => {
-    const emitter = new CompatibleEventEmitter<{ test: [string] }>();
+    const emitter = new EventEmitter<{ test: [string] }>();
     const listener = vi.fn();
     emitter.addListener("test", listener);
     emitter.emit("test", "test");
@@ -11,7 +11,7 @@ describe("CompatibleEventEmitter", () => {
   });
 
   it("should remove listeners", () => {
-    const emitter = new CompatibleEventEmitter<{ test: [string] }>();
+    const emitter = new EventEmitter<{ test: [string] }>();
     const listener = vi.fn();
     emitter.addListener("test", listener);
     emitter.removeListener("test", listener);
@@ -20,7 +20,7 @@ describe("CompatibleEventEmitter", () => {
   });
 
   it("should remove all listeners", () => {
-    const emitter = new CompatibleEventEmitter<{ test: [string] }>();
+    const emitter = new EventEmitter<{ test: [string] }>();
     const listener = vi.fn();
     emitter.addListener("test", listener);
     emitter.removeAllListeners("test");
@@ -31,7 +31,7 @@ describe("CompatibleEventEmitter", () => {
   it("should prepend listeners", () => {
     const callers: string[] = [];
 
-    const emitter = new CompatibleEventEmitter<{ test: [string] }>();
+    const emitter = new EventEmitter<{ test: [string] }>();
     const listener = vi.fn(() => callers.push("listener"));
     emitter.addListener("test", listener);
     const listener2 = vi.fn(() => callers.push("listener2"));
@@ -42,7 +42,7 @@ describe("CompatibleEventEmitter", () => {
 
   it("should set max listeners", () => {
     const consoleWarnSpy = vi.spyOn(console, "warn");
-    const emitter = new CompatibleEventEmitter<{ test: [string] }>();
+    const emitter = new EventEmitter<{ test: [string] }>();
     emitter.setMaxListeners(1);
     const listener = vi.fn();
     const listener2 = vi.fn();
@@ -52,33 +52,33 @@ describe("CompatibleEventEmitter", () => {
   });
 
   it("should get max listeners", () => {
-    const emitter = new CompatibleEventEmitter<{ test: [string] }>();
+    const emitter = new EventEmitter<{ test: [string] }>();
     emitter.setMaxListeners(1);
     expect(emitter.getMaxListeners()).toBe(1);
   });
 
   it("should get event names", () => {
-    const emitter = new CompatibleEventEmitter<{ test: [string] }>();
+    const emitter = new EventEmitter<{ test: [string] }>();
     emitter.addListener("test", () => {});
     expect(emitter.eventNames()).toEqual(["test"]);
   });
 
   it("should get listener count", () => {
-    const emitter = new CompatibleEventEmitter<{ test: [string] }>();
+    const emitter = new EventEmitter<{ test: [string] }>();
     const listener = vi.fn();
     emitter.addListener("test", listener);
     expect(emitter.listenerCount("test")).toBe(1);
   });
 
   it("should get listeners", () => {
-    const emitter = new CompatibleEventEmitter<{ test: [string] }>();
+    const emitter = new EventEmitter<{ test: [string] }>();
     const listener = vi.fn();
     emitter.addListener("test", listener);
     expect(emitter.listeners("test")).toEqual([listener]);
   });
 
   it('should remove once listener once called', () => {
-    const emitter = new CompatibleEventEmitter<{ test: [string] }>()
+    const emitter = new EventEmitter<{ test: [string] }>()
     const listener = vi.fn()
     emitter.once('test', listener)
     emitter.emit('test', 'abc')
