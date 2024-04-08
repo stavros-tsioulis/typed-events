@@ -1,8 +1,6 @@
 import type NodeEventEmitter from "node:events";
 
-export type OnlyStringSymbolKeys<T> = {
-  [K in keyof T]: K extends string | symbol ? K : never;
-}[keyof T];
+export type OnlyStringSymbolKeys<T> = { [K in keyof T]: K extends string | symbol ? K : never }[keyof T];
 
 export type EventName<AllEvents extends { [K: string]: any[] }> =
   | OnlyStringSymbolKeys<AllEvents>
@@ -28,18 +26,23 @@ export type Listener<
 
 export let defaultMaxListeners = 10;
 
-export class EventEmitter<Events extends { [K: string]: any[] }> implements NodeEventEmitter {
-  private _events: Map<EventName<Events>, Function[]> = new Map();
-  private _eventsCount: number = 0;
-  private _maxListeners: number = defaultMaxListeners;
+enum Position {
+  EMD,
+  START
+}
 
-  addListener<E extends EventName<Events>>(eventName: E, listener: Listener<E, Events>): this {
+export class EventEmitter<Events extends { [K: string]: any[] }> implements NodeEventEmitter {
+  private _events = new Map<EventName<Events>, Function[]>();
+  private _eventsCount = 0;
+  private _maxListeners = defaultMaxListeners;
+
+  private addListenerToPosition<E extends EventName<Events>>(eventName: E, listener: Listener<E, Events>, position: Position): this {
     this._eventsCount++;
 
     if (!this._events.has(eventName)) this._events.set(eventName, [listener]);
     else {
       const listeners = this._events.get(eventName);
-      listeners?.push(listener);
+      position === Position.EMD ? listeners?.push(listener) : listeners?.unshift(listener);
       const listenersCount = listeners?.length ?? 0;
       if (listenersCount > this._maxListeners)
         console.warn(`Max listeners (${this._maxListeners}) have been reached. ${listenersCount} listeners were added to event ${String(eventName)}. This may cause a memory leak.`);
@@ -49,20 +52,12 @@ export class EventEmitter<Events extends { [K: string]: any[] }> implements Node
     return this;
   }
 
+  addListener<E extends EventName<Events>>(eventName: E, listener: Listener<E, Events>): this {
+    return this.addListenerToPosition(eventName, listener, Position.EMD)
+  }
+
   prependListener<E extends EventName<Events>>(eventName: E, listener: Listener<E, Events>): this {
-    this._eventsCount++;
-
-    if (!this._events.has(eventName)) this._events.set(eventName, [listener]);
-    else {
-      const listeners = this._events.get(eventName);
-      listeners?.unshift(listener);
-      const listenersCount = listeners?.length ?? 0;
-      if (listenersCount > this._maxListeners)
-        console.warn(`Max listeners (${this._maxListeners}) have been reached. ${listenersCount} listeners were added to event ${String(eventName)}. This may cause a memory leak.`);
-    }
-
-    this.emit("newListener", listener.listener ?? listener);
-    return this;
+    return this.addListenerToPosition(eventName, listener, Position.START)
   }
 
   prependOnceListener<E extends EventName<Events>>(eventName: E, listener: Listener<E, Events>): this {
@@ -70,25 +65,18 @@ export class EventEmitter<Events extends { [K: string]: any[] }> implements Node
   }
 
   removeListener<E extends EventName<Events>>(eventName: E, listener: Listener<E, Events>): this {
-    let count = this.listenerCount(eventName, listener);
-
     const _events = this._events.get(eventName);
+    const index = _events?.indexOf(listener) ?? -1;
+    if (index === -1) return this;
 
-    while (_events && count--) {
-      const index = _events.indexOf(listener);
-      if (index === -1) continue;
-      _events.splice(index, 1);
-    }
-
+    _events?.splice(index, 1);
     this.emit("removeListener", listener.listener ?? listener);
-
     return this;
   }
 
-  removeAllListeners(event?: EventName<Events> | undefined): this {
-    if (event) this._events.delete(event);
+  removeAllListeners(eventName?: EventName<Events> | undefined): this {
+    if (eventName) this._events.delete(eventName);
     else this._events.clear();
-
     return this;
   }
 
@@ -121,8 +109,7 @@ export class EventEmitter<Events extends { [K: string]: any[] }> implements Node
   }
 
   listenerCount(eventName: EventName<Events>, listener?: Function | undefined): number {
-    const listeners = this.rawListeners(eventName);
-
+    const listeners = this.listeners(eventName);
     if (listener) return listeners.filter((l) => l === listener).length;
     else return listeners.length;
   }

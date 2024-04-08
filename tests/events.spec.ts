@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { EventEmitter } from "../src/events";
+import { EventEmitter } from "..";
 
 describe("EventEmitter", () => {
   it("should add listeners", () => {
