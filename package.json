@@ -4,6 +4,9 @@
   "version": "0.0.1",
   "type": "module",
   "main": "index.ts",
+  "exports": {
+    ".": "./src/events.ts"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
