@@ -27,7 +27,7 @@ export type Listener<
 export let defaultMaxListeners = 10;
 
 enum Position {
-  EMD,
+  END,
   START
 }
 
@@ -42,7 +42,7 @@ export class EventEmitter<Events extends { [K: string]: any[] }> implements Node
     if (!this._events.has(eventName)) this._events.set(eventName, [listener]);
     else {
       const listeners = this._events.get(eventName);
-      position === Position.EMD ? listeners?.push(listener) : listeners?.unshift(listener);
+      position === Position.END ? listeners?.push(listener) : listeners?.unshift(listener);
       const listenersCount = listeners?.length ?? 0;
       if (listenersCount > this._maxListeners)
         console.warn(`Max listeners (${this._maxListeners}) have been reached. ${listenersCount} listeners were added to event ${String(eventName)}. This may cause a memory leak.`);
@@ -53,7 +53,7 @@ export class EventEmitter<Events extends { [K: string]: any[] }> implements Node
   }
 
   addListener<E extends EventName<Events>>(eventName: E, listener: Listener<E, Events>): this {
-    return this.addListenerToPosition(eventName, listener, Position.EMD)
+    return this.addListenerToPosition(eventName, listener, Position.END)
   }
 
   prependListener<E extends EventName<Events>>(eventName: E, listener: Listener<E, Events>): this {
