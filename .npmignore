@@ -1,0 +1,38 @@
+# Source files
+src/
+tests/
+
+# Build config
+tsconfig.json
+tsconfig.build.json
+
+# Development files
+.vscode/
+.idea/
+*.local
+.DS_Store
+
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+
+# Build outputs (we only want dist/)
+dist-ssr/
+
+# Logs
+*.log
+logs/
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+
+# Editor
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

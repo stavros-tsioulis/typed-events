@@ -1,4 +1,4 @@
-import type NodeEventEmitter from "node:events";
+import type { EventEmitter as NodeEventEmitter } from "node:events";
 
 export type OnlyStringSymbolKeys<T> = { [K in keyof T]: K extends string | symbol ? K : never }[keyof T];
 

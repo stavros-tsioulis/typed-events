@@ -4,6 +4,6 @@
     "noEmit": false,
     "allowImportingTsExtensions": false,
     "outDir": "dist",
-    "declaration": true,
+    "declaration": true
   }
 }

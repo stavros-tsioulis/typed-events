@@ -1,22 +1,53 @@
 {
   "name": "typed-events",
-  "private": true,
   "version": "0.0.1",
+  "description": "A fully typed EventEmitter implementation compatible with Node.js EventEmitter API",
   "type": "module",
   "main": "./dist/events.js",
   "types": "./dist/events.d.ts",
+  "module": "./dist/events.js",
+  "exports": {
+    ".": {
+      "types": "./dist/events.d.ts",
+      "import": "./dist/events.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "events",
+    "eventemitter",
+    "typed",
+    "typescript",
+    "node",
+    "event",
+    "emitter",
+    "listener"
+  ],
+  "author": "Stavros Tsioulis",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stavros-tsioulis/typed-events.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stavros-tsioulis/typed-events/issues"
+  },
+  "homepage": "https://github.com/stavros-tsioulis/typed-events#readme",
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.build.json",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "vitest"
+    "test": "vitest",
+    "prepublishOnly": "pnpm build"
   },
   "devDependencies": {
     "typescript": "^5.6.2",
-    "vite": "^5.4.6"
-  },
-  "dependencies": {
+    "vite": "^5.4.6",
     "@types/node": "^20.16.5",
     "vitest": "^1.6.0"
   },
