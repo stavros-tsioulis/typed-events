@@ -1,5 +1,5 @@
 {
-  "name": "typed-events",
+  "name": "@stavros-tsioulis/typed-events",
   "version": "0.0.1",
   "description": "A fully typed EventEmitter implementation compatible with Node.js EventEmitter API",
   "type": "module",
@@ -37,6 +37,9 @@
     "url": "https://github.com/stavros-tsioulis/typed-events/issues"
   },
   "homepage": "https://github.com/stavros-tsioulis/typed-events#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.build.json",
